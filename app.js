@@ -37,19 +37,55 @@ app.get('/users', (req, res) => {
 });
 
 app.get('/users/:id', (req, res) => {
-    res.send('Get User by Id');
+    const {id } = req.params;
+    const sql = `SELECT * FROM users WHERE idUser = ${id}`;
+    conn.query(sql, (error, result) => {
+        if(error) throw error;
+
+        if(result.length > 0){
+            res.json(result);
+        }else {
+            res.send('Not results')
+        }
+
+    });
 });
 
+
 app.post('/add', (req,res) => {
-    res.send('New User');
+    const sql = 'INSERT INTO users SET ?';
+    const userObj = {
+        name : req.body.name,
+        lastname : req.body.lastname,
+        nickname : req.body.nickname,
+        password : req.body.password,
+        email : req.body.email
+    }
+    conn.query(sql, userObj, error => {
+        if (error) throw error;
+        res.send('User Created');
+    })
 });
 
 app.put('/update/:id', (req, res) => {
-    res.send('Update User')
+    const {id } = req.params;
+    const {name, lastname, nickname, password, email} = req.body;
+    const sql = `UPDATE users SET name = '${name}',  lastname = '${lastname}', nickname = '${nickname}', password = '${password}', email = '${email}' WHERE idUser = ${id}`;
+    
+    conn.query(sql, error => {
+        if (error) throw error;
+        res.send('User Updated');
+    });
 });
 
 app.delete('/delete/:id', (req, res) => {
-    res.send('Delete User')
+    const {id } = req.params;
+    const sql = `DELETE FROM users WHERE idUser = ${id}`;
+    conn.query(sql, error => {
+        if (error) throw error;
+        res.send('User Deleted');
+    });
+
 });
 
 
